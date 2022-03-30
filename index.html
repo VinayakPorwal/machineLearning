@@ -1,28 +1,53 @@
 <!DOCTYPE html>
 <html>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.min.js"></script>
 <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+<link rel="stylesheet" href="style.css" />
+
 <body>
-<h1>Image Classification</h1>
-<h2>With MobileNet and ml5.js</h2>
-<div id="result">Scanning ...</div>
-<img id="image" src="/img1.jpg" width="100%">
+  <div class="center">
+    <div class="form-input">
+      <p id="result">Upload Image..</p>
+      <div class="preview">
+        <img id ='image' class="file-ip-1-preview">
+      </div>
+      <label for="file-ip-1">Upload Image</label>
+      <input type="file" id="file-ip-1" accept="image/*" onchange="showPreview(event);">
+      
+    </div>
+  </div> 
 
-<script>
-// Initialize Image Classifier with MobileNet.
-const classifier =  ml5.imageClassifier('MobileNet');
-classifier.classify(document.getElementById("image"), gotResult);
+  <script>
+    // Function to run when results arrive
+    const element = document.getElementById("result");
+    function gotResult(error, results) {
+      if (error) {
+        element.innerHTML = error;
+      } else {
+        let num = results[0].confidence * 100;
+        element.innerHTML =
+          results[0].label + "<br>Confidence: " + num.toFixed(2) + "%";
+      }
+    }
 
-// Function to run when results arrive
-function gotResult(error, results) {
-  const element = document.getElementById("result");
-  if (error) {
-    element.innerHTML = error;
-  } else {
-    let num = results[0].confidence * 100;
-    element.innerHTML = results[0].label + "<br>Confidence: " + num.toFixed(2) + "%";
-  }
-}
-</script>
+    function showPreview(event) {
+      if (event.target.files.length > 0) {
+        var src = URL.createObjectURL(event.target.files[0]);
+        var preview = document.getElementById("image");
+        preview.src = src;
+        preview.style.display = "block";
+        element.innerHTML = "Scaning..";
+
+        // Initialize Image Classifier with MobileNet.
+        const classifier = ml5.imageClassifier("MobileNet");
+        classifier.classify(document.getElementById("image"), gotResult);
+      }
+    }
+  </script>
 </body>
+
 </html>
